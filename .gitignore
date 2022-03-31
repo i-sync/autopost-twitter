@@ -22,3 +22,4 @@ __pycache__
 .vscode
 log/
 venv/
+config/user.json
