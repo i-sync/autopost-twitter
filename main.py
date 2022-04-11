@@ -6,10 +6,12 @@ Auto Post Twitter
 import re
 import os
 import time
+import math
 import json
 import tweepy
 import random
 import requests
+import traceback
 from config import configs
 
 def get_aqi_txt(num):
@@ -26,9 +28,25 @@ def get_aqi_txt(num):
     else:
         return "严重污染"
 
+def temperature():
+    url = f"https://d1.weather.com.cn/weixinfc/101010100.html?_={math.floor(time.time()*1000)}"
+    headers = {
+        "Referer": "http://m.weather.com.cn/"
+    }
+    res = requests.get(url, headers=headers)
+    if res.status_code != 200:
+        return ""
+    try:
+        res = res.content.decode('utf-8').replace("var fc=", "")
+        res = json.loads(res)
+        return f'[{res["f"][1]["fd"]}℃ ~ {res["f"][1]["fc"]}℃]'
+    except Exception as e:
+        print(e)
+        print(traceback.format_exc())
+        return ""
 
 def weather():
-    url = f"https://d1.weather.com.cn/sk_2d/101010100.html?_={time.time()}"
+    url = f"https://d1.weather.com.cn/sk_2d/101010100.html?_={math.floor(time.time()*1000)}"
     headers = {
         "Referer": "http://m.weather.com.cn/"
     }
@@ -41,7 +59,7 @@ def weather():
         aqi = int(res["aqi_pm25"])
         aqi_txt = get_aqi_txt(aqi)
 
-        return f'{res["cityname"]}, 今天是{time.localtime().tm_year}年{res["date"]} {res["weather"]} {res["WD"]}{res["WS"]}, 当前温度: {res["temp"]}°C, 空气质量: {aqi} ({aqi_txt})'
+        return f'{res["cityname"]}, 今天是{time.localtime().tm_year}年{res["date"]} {res["weather"]} {res["WD"]}{res["WS"]}, 当前温度: {res["temp"]}°C{temperature()}, 空气质量: {aqi} ({aqi_txt})'
     except Exception as e:
         return "获取天气数据失败！" + str(e)
 
@@ -92,7 +110,7 @@ def test():
 if __name__ == "__main__":
     w = weather()
     h = history()
-    text = f"[天气自动播报] {w}\n\n[历史上的今天] {h}"
+    text = f"[天气自动播报] {w}\n[历史上的今天] {h}"
     client=tweepy.Client(consumer_key=configs.twitter.apikey,
                      consumer_secret=configs.twitter.apikey_secret,
                      access_token=configs.twitter.access_token,
