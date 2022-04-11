@@ -58,12 +58,13 @@ def crawler():
                                 tmp += line
                         res_twee = client.create_tweet(text=res[0])
                         for line in res[1:]:
-                            client.create_tweet(text=line, in_reply_to_tweet_id = res_twee.data["id"])
+                            res_twee = client.create_tweet(text=line, in_reply_to_tweet_id = res_twee.data["id"])
+                            time.sleep(random.randint(4, 7))
                     else:
                         #print(content)
                         client.create_tweet(text=content)
                     # sleep 1-3 sec.
-                    time.sleep(random.randint(1, 3))
+                    time.sleep(random.randint(15, 25))
 
     except Exception as e:
         print(e)
