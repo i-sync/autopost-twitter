@@ -31,7 +31,7 @@ def crawler():
 
         json_data = res.json()
         #print(json_data)
-        for data in json_data["data"]["roll_data"]:
+        for data in reversed(json_data["data"]["roll_data"]):
             id = data["id"]
             content = data["content"]
             ctime = data["ctime"]
