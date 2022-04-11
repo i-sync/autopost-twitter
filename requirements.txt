@@ -1,3 +1,5 @@
 #依赖库
 requests
 tweepy
+sqlalchemy
+pymysql
