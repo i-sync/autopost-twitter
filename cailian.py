@@ -44,16 +44,18 @@ def crawler():
                     # crate tweepy
                     if len(content.encode('gbk')) > 280 or len(content) > 140:
                         contents = re.sub(r"([，|。|！|……|!])", r"\1\n", content).split('\n')
+                        contents = [x for x in contents if x and x.strip()]
                         index = 1
                         tmp = ""
                         res = []
                         for i, line in enumerate(contents, 1):
-                            line = line.replace('\n', '')
-                            if len((tmp + line).encode('gbk')) > 276 or  len(tmp +line) > 138 or i == len(contents):
+                            if len((tmp + line).encode('gbk')) > 276 or  len(tmp +line) > 138:
                                 # post tweepy
                                 res.append(f"{index}) {tmp}")
                                 tmp = line
                                 index += 1
+                            elif i == len(contents):
+                                res.append(f"{index}) {tmp + line}")
                             else:
                                 tmp += line
                         res_twee = client.create_tweet(text=res[0])
