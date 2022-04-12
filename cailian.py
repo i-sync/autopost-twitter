@@ -54,6 +54,8 @@ def crawler():
                                 res.append(f"{index}) {tmp}")
                                 tmp = line
                                 index += 1
+                                if i == len(contents): # if this line is the last one, append.
+                                    res.append(f"{index}) {tmp}")
                             elif i == len(contents):
                                 res.append(f"{index}) {tmp + line}")
                             else:
