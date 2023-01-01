@@ -10,6 +10,8 @@ import tweepy
 import traceback
 import requests
 
+from requests.adapters import HTTPAdapter
+
 from config import configs
 from orm import Cailian, session_scope
 
@@ -19,7 +21,17 @@ def crawler():
         "Referer": "https://m.cls.cn/telegraph",
         "User-Agent": "Mozilla/5.0 (Linux; Android 8.0.0; SM-G955U Build/R16NW) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.141 Mobile Safari/537.36"
     }
-    res = requests.get(url, headers=headers)
+
+    s = requests.Session()
+    a = HTTPAdapter(max_retries=5)
+    s.mount('http://', a)
+    s.mount('https://', a)
+
+    try:
+        res = s.get(url, headers=headers, timeout=5)
+    except requests.exceptions.RequestException as e:
+        print(e)
+        return
     if res.status_code != 200:
         return
     try:
