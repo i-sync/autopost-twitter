@@ -46,6 +46,11 @@ def crawler():
         for data in reversed(json_data["data"]["roll_data"]):
             id = data["id"]
             content = data["content"]
+
+            # only post recommend news. recommand -eq 1.
+            if data["recommend"] == 0:
+                continue
+
             ctime = data["ctime"]
             with session_scope() as session:
                 obj = session.query(Cailian).filter(Cailian.id == id).first()
