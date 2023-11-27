@@ -9,6 +9,7 @@ import random
 import tweepy
 import traceback
 import requests
+from datetime import datetime, timedelta
 
 from requests.adapters import HTTPAdapter
 
@@ -87,6 +88,12 @@ def crawler():
                     # sleep 1-3 sec.
                     time.sleep(random.randint(15, 25))
 
+
+        # clean the old data < 30 days
+        d30 = (datetime.now() - timedelta(days=30)).timestamp()
+        with session_scope() as session:
+            data = session.query(Cailian).filter(Cailian.created_at < d30)
+            data.delete(synchronize_session=False)
     except Exception as e:
         print(e)
         print(traceback.format_exc())
